@@ -1,10 +1,16 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from .models import Post
 
 class PostList(ListView):
     model = Post
     ordering = '-pk'
+
+class PostDetail(DetailView):
+    model = Post
+
+
+
     # 설정 안하면 자동으로 post_list.html 을 인식
     # template_name = 'blog/post_list.html'
 # FBV 방식
@@ -24,7 +30,7 @@ class PostList(ListView):
 #
 #     return render(
 #         request,
-#         'blog/single_post_page.html',
+#         'blog/post_detail.html',
 #         {
 #             'post':post,
 #         }
