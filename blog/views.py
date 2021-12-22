@@ -4,14 +4,16 @@ from .models import Post
 
 class PostList(ListView):
     model = Post
-
+    ordering = '-pk'
+    # 설정 안하면 자동으로 post_list.html 을 인식
+    # template_name = 'blog/post_list.html'
 # FBV 방식
 # def index(request):
 #     posts = Post.objects.all().order_by('-pk')
 #
 #     return render(
 #         request,
-#         'blog/index.html',
+#         'blog/post_list.html',
 #         {
 #             'posts': posts,
 #         }
