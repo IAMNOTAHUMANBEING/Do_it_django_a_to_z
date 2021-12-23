@@ -16,8 +16,8 @@
             <h5 class="text-muted">{{ post.hook_text }}</h5>
             {% endif %}
             <!-- Post Author, Date/Time -->
-            <div style="display: inline-block" class="lead">by <a href="#">작성자명 쓸 위치</a></div>
-            <div style="float:right;display: inline-block"> {{ post.created_at }}</div>
+            <div class="lead"><a href="#">by {{ post.author | upper }}</a></div>
+            <div>Posted on {{ post.created_at }} </div>
             <hr>
             <!-- Post categories-->
             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>

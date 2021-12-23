@@ -17,7 +17,7 @@
         {% endif %}
         <p class="card-text">{{p.content | truncatewords:45 }}</p>
     </div>
-    <div class="card-footer text-muted">{{p.created_at}}</div>
+    <div class="card-footer text-muted">Posted on {{p.created_at}} by <a href="#">{{ p.author | upper }}</a> </div>
 </div>
 {% endfor %}
 {% else %}
