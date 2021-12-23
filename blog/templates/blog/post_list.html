@@ -44,7 +44,8 @@
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal"><i class="fas fa-sign-in-alt"></i>&nbsp Log in</a>
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal"><i
+                            class="fas fa-sign-in-alt"></i>&nbsp Log in</a>
                 </li>
             </ul>
         </div>
@@ -64,11 +65,17 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <button type="button" class="btn btn-outline-dark btn-block btn-sm"><i class="fab fa-google"></i>&nbsp Log in with Google</button>
-                        <button type="button" class="btn btn-outline-dark btn-block btn-sm"><i class="far fa-envelope"></i>&nbsp Log in with E-mail</button>
+                        <button type="button" class="btn btn-outline-dark btn-block btn-sm"><i
+                                class="fab fa-google"></i>&nbsp Log in with Google
+                        </button>
+                        <button type="button" class="btn btn-outline-dark btn-block btn-sm"><i
+                                class="far fa-envelope"></i>&nbsp Log in with E-mail
+                        </button>
                     </div>
                     <div class="col-md-6">
-                        <button type="button" class="btn btn-outline-dark btn-block btn-sm"><i class="far fa-envelope"></i>&nbsp Sign up with E-mail</button>
+                        <button type="button" class="btn btn-outline-dark btn-block btn-sm"><i
+                                class="far fa-envelope"></i>&nbsp Sign up with E-mail
+                        </button>
                     </div>
                 </div>
             </div>
@@ -86,7 +93,11 @@
             <h1>Blog</h1>
             {% for p in post_list %}
             <div class="card mb-4">
-                <img class="card-img-top" src="{{ p.head_image.url }}" alt="Card image cap">
+                {% if p.head_image %}
+                    <img class="card-img-top" src="{{ p.head_image.url }}" alt="{{ p }} head image">
+                {% else %}
+                    <img class="card-img-top" src="https://picsum.photos/seed/{{ p.id }}/800/200" alt="random_image">
+                {%endif%}
                 <div class="card-body">
                     <h2 class="card-title"><a href="{{p.get_absolute_url}}"> {{p.title}}</a></h2>
                     <p class="card-text">{{p.content}}</p>
