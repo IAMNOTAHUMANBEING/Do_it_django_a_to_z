@@ -13,14 +13,14 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     # author: 추후 작성 예정
 
-    def __str__(self):
+    def __str__(self):  
         return f'[{self.pk}]{self.title}'
 
-    def get_absolute_url(self):
+    def get_absolute_url(self):     # 페이지의 주소를 가져오는 함수
         return f'/blog/{self.pk}/'
 
-    def get_file_name(self):
+    def get_file_name(self):    # 업로드 파일 이름 가져오는 함수
         return os.path.basename(self.file_upload.name)
 
-    def get_file_ext(self):
+    def get_file_ext(self):     # 파일 이름에서 확장자만 리턴하는 함수
         return self.get_file_name().split('.')[-1]

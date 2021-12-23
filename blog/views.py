@@ -4,7 +4,7 @@ from .models import Post
 
 class PostList(ListView):
     model = Post
-    ordering = '-pk'
+    ordering = '-pk'    # 최신순 정렬
 
 class PostDetail(DetailView):
     model = Post

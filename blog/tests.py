@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from .models import Post
 
 
-class Testview(TestCase):
+class TestView(TestCase):
     def setUp(self):
         self.client = Client()
 
@@ -56,7 +56,7 @@ class Testview(TestCase):
             content='Hello'
         )
         # 1.2 그 포스트의 url은 'blog/1/' 이다.
-        self.assertEqual(post_001.get_absolute_url())
+        self.assertEqual(post_001.get_absolute_url(), '/blog/1/')
 
         # 2. 첫번째 포스트의 상세 페이지 테스트
         # 2.1 첫번째 post url로 접근하면 정상적으로 작동한다
@@ -73,7 +73,7 @@ class Testview(TestCase):
         self.assertIn(post_001.title, soup.title.text)
 
         # 2.4 첫번째 포스트의 제목이 포스트 영역에 있다.
-        main_area - soup.find('div', id='main-area')
+        main_area = soup.find('div', id='main-area')
         post_area = main_area.find('div', id='post-area')
         self.assertIn(post_001.title, post_area.text)
 
