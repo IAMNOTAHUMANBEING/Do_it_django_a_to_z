@@ -16,8 +16,12 @@
             <h5 class="text-muted">{{ post.hook_text }}</h5>
             {% endif %}
             <!-- Post Author, Date/Time -->
-            <div class="lead"><a href="#">by {{ post.author | upper }}</a></div>
-            <div>Posted on {{ post.created_at }} </div>
+            <div class="row">
+                <div class="lead col-8">by<a href="#"> {{ post.author | upper }}</a></div>
+                <div class="col-4">
+                    Posted on {{ post.created_at }}
+                </div>
+            </div>
             <hr>
             <!-- Post categories-->
             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
