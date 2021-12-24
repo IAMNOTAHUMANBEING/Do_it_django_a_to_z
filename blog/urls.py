@@ -1,11 +1,8 @@
-from django.urls import path, include
+from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('category/<str:slug>/', views.category_page),
     path('<int:pk>/', views.PostDetail.as_view()),
-    # FBV
-    # path('<int:pk>/', views.single_post_page),
     path('', views.PostList.as_view()),
-    # FBV
-    # path('', views.index),
 ]
