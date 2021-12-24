@@ -9,6 +9,11 @@
 <article>
     <!-- Post header-->
     <div id="post-area">
+        {% if post.category %}
+        <span class="badge badge-secondary float-right">{{ post.category }}</span>
+        {% else %}
+        <span class="badge badge-secondary float-right">미분류</span>
+        {% endif %}
         <header class="mb-4">
             <!-- Post title-->
             <h1 class="fw-bolder mb-1">{{ post.title }}</h1>
@@ -23,9 +28,6 @@
                 </div>
             </div>
             <hr>
-            <!-- Post categories-->
-            <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
-            <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
         </header>
         <!-- Preview image figure-->
         <div class="card mb-4">
