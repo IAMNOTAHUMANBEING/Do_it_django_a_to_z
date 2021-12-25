@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
-from .models import Post, Category
+from .models import Post, Category, Tag
 
 class PostList(ListView):
     model = Post
@@ -44,6 +44,22 @@ def category_page(request, slug):   # FBV방식으로 함수생성
             'category': category,   # 페이지 타이틀 옆에 카테고리 이름
         }
     )
+
+def tag_page(request, slug):   # FBV방식으로 함수생성
+    tag = Tag.objects.get(slug=slug)    # slug가 같은 태그를 불러오는 쿼리셋
+    post_list = tag.post_set.all()  # 같은 태그를 가진 post를 모두 불러오기, 왜 카테고리랑 다르지?
+
+    return render(
+        request,
+        'blog/post_list.html',  # post_list.html을 사용하기 때문에 PostList 클래스에서 context로 정의 했던 부분을 딕셔너리 형태로 직접 정의해야한다.
+        {
+            'post_list': post_list,     # 앞에서 상황에 따라 저장되는 post_list
+            'tag' : tag,
+            'categories': Category.objects.all(),   # 카테고리 목록
+            'no_category_post_count': Post.objects.filter(category=None).count(),   # 미분류 포스트 개수
+        }
+    )
+
 
 # FBV 방식
 # def index(request):
