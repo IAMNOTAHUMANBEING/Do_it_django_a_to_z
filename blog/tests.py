@@ -172,3 +172,34 @@ class TestView(TestCase):
         self.assertIn(self.post_001.title, main_area.text)
         self.assertNotIn(self.post_002.title, main_area.text)
         self.assertNotIn(self.post_003.title, main_area.text)
+
+    def test_create_post(self):
+        # 로그인하지 않으면 status code가 200이면 안 된다
+        response = self.client.get('/blog/create_post/')
+        self.assertNotEqual(response.status_code, 200)
+
+        # 로그인을 한다
+        self.client.login(username='trump', password='somepassword')
+
+        response = self.client.get('/blog/create_post/')
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        self.assertEqual('Create Post - Blog', soup.title.text)
+        main_area = soup.find('div', id='main-area')
+        self.assertIn('Create New Post', main_area.text)
+
+        self.client.post(
+            '/blog/create_post/',   # 해당 경로로
+            {
+                'title':'Post Form 만들기',
+                'content':'Post Form 페이지를 만듭시다.',   # 딕셔너리 정보를 Post 방식으로 전송
+            }
+        )
+        self.assertEqual(Post.objects.count(), 4)
+        last_post = Post.objects.last()
+        self.assertEqual(last_post.title, "Post Form 만들기")  # 마지막 게시물 즉, 전송한 게시물 정보가 잘 저장됐는지 확인
+        self.assertEqual(last_post.author.username, 'trump')
+
+
+

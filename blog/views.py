@@ -1,5 +1,6 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.shortcuts import render, redirect
+from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Post, Category, Tag
 
 class PostList(ListView):
@@ -60,6 +61,17 @@ def tag_page(request, slug):   # FBV방식으로 함수생성
         }
     )
 
+class PostCreate(LoginRequiredMixin, CreateView):   # Mixin 클래스는 추가 상속이 가능
+    model = Post
+    fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload', 'category']     # 사용자에게 입력 받을 요소
+
+    def form_valid(self, form):
+        current_user = self.request.user    # 웹사이트 방문자 의미
+        if current_user.is_authenticated:   # 방문자가 로그인한 상태인지를 확인
+            form.instance.author = current_user     # 방문한 상태면 form.instance(새로 생성한 포스트)의 author 필드에 current_user(현재 접속한 방문자)를 담는다.
+            return super(PostCreate, self).form_valid(form) # 처리한 form을 기본 form_valid() 함수에 인자로 보내서 처리
+        else:
+            return redirect('/blog/')   # 로그인한 상태가 아니라면 이전 주소로 되돌려 보냄
 
 # FBV 방식
 # def index(request):
