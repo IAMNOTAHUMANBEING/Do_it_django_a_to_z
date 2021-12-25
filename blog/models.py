@@ -15,6 +15,16 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)    # 사람이 읽을 수 있는 텍스트로 고유 URL을 만듬
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return f'/blog/tag/{self.slug}/'   # 마지막에 / 안넣어서 시간 날림
+
 class Post(models.Model):
     title = models.CharField(max_length=30)  # 글씨 제한이 있는 문자 필드
     hook_text = models.CharField(max_length=100, blank=True)  # 미리보기 내용
@@ -29,7 +39,9 @@ class Post(models.Model):
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)  # 사용자가 삭제되면 작성자 null로 변환
     # author = models.ForeignKey(User, on_delete=models.CASCADE)  # 사용자가 삭제되면 작성한 포스트도 삭제
 
-    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)    # black와 null 구분
+    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)    # black와 null
+
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return f'[{self.pk}]{self.title} :: {self.author}'

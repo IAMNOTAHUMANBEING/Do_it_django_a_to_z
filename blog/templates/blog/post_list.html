@@ -6,22 +6,35 @@
 {% for p in post_list %}
 <!-- Blog Post -->
 <div class="card mb-4" id="post-{{ p.pk }}">
+    <!-- image -->
     {% if p.head_image %}
-    <img class="card-img-top" src="{{ p.head_image.url }}" alt="{{ p }} head image">
+        <img class="card-img-top" src="{{ p.head_image.url }}" alt="{{ p }} head image">
     {% else %}
-    <img class="card-img-top" src="https://picsum.photos/seed/{{ p.id }}/800/200" alt="random_image">
+        <img class="card-img-top" src="https://picsum.photos/seed/{{ p.id }}/800/200" alt="random_image">
     {%endif%}
     <div class="card-body">
+        <!-- category -->
         {% if p.category %}
             <span class="badge badge-secondary float-right">{{ p.category }}</span>
         {% else %}
             <span class="badge badge-secondary float-right">미분류</span>
         {% endif %}
         <h2 class="card-title"><a href="{{p.get_absolute_url}}"> {{p.title}}</a></h2>
+        <!-- hook text -->
         {% if p.hook_text %}
-        <h5 class="text-muted">{{ p.hook_text }}</h5>
+            <h5 class="text-muted">{{ p.hook_text }}</h5>
         {% endif %}
+        <!-- content -->
         <p class="card-text">{{p.content | truncatewords:45 }}</p>
+        <!-- tags -->
+        {% if p.tags.exists %}
+            <i class="fas fa-tags"></i>
+            {% for tag in p.tags.all %}
+                <a href="{{ tag.get_absolute_url }}"><span clss="badge badge-pill badge-light">{{ tag }}</span></a>
+            {% endfor %}
+            <br/>
+            <br/>
+        {% endif %}
     </div>
     <div class="card-footer text-muted">Posted on {{p.created_at}} by <a href="#">{{ p.author | upper }}</a></div>
 </div>
