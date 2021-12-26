@@ -5,9 +5,13 @@
 {% block main_area %}
     <h1>Create New Post</h1>
     <hr/>
-    <form method="post" enctype="multipart/form-data">{% csrf_token %}   <!-- 사용자가 기록한 값을 서버로 보내는 용도, 첨부파일과 함께 post방식으로 전송, csrf 공격 보안 의미-->
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}   <!-- 사용자가 기록한 값을 서버로 보내는 용도, 첨부파일과 함께 post 방식으로 전송, csrf 공격 보안 의미-->
         <table>
             {{ form }}
+            <tr>
+                <th><label for="id_tags_str">Tags:</label></th>
+                <td><input type="text" name="tags_str" id="id_tags_str"></td>
+            </tr>
         </table>
         <button type="submit" class="btn btn-primary float-right">Submit</button>
     </form>

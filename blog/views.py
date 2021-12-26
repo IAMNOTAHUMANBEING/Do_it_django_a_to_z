@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Post, Category, Tag
+from django.utils.text import slugify
 from django.core.exceptions import PermissionDenied
 
 class PostList(ListView):
@@ -64,16 +65,33 @@ def tag_page(request, slug):   # FBV방식으로 함수생성
 
 class PostCreate(UserPassesTestMixin, LoginRequiredMixin, CreateView):   # Mixin 클래스는 추가 상속이 가능
     model = Post
-    fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload', 'category']     # 사용자에게 입력 받을 요소
+    fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload', 'category',]     # 사용자에게 입력 받을 요소
 
     def test_func(self):
         return self.request.user.is_superuser or self.request.user.is_staff     # 접근가능한 사용자를 제한
 
-    def form_valid(self, form):
+    def form_valid(self, form):     # form 안에 들어온 값을 바탕으로 모델에 해당하는 인스턴스를 만들어 데이터베이스에 저장한 후 그 인스턴스의 경로로 리다이렉트 하는 역할
         current_user = self.request.user    # 웹사이트 방문자 의미
         if current_user.is_authenticated and (current_user.is_staff or current_user.is_suqeruser):   # 방문자가 로그인한 상태인지, 권한을 가지고 있는지 확인
             form.instance.author = current_user     # 방문한 상태면 form.instance(새로 생성한 포스트)의 author 필드에 current_user(현재 접속한 방문자)를 담는다.
-            return super(PostCreate, self).form_valid(form)     # 처리한 form을 기본 form_valid() 함수에 인자로 보내서 처리
+            response = super(PostCreate, self).form_valid(form) # 태그와 관련된 작업을 하기 전에 현재의 form을 인자로 보내 결과를 담아둠
+
+            tags_str = self.request.POST.get('tags_str')    # Post 방식으로 전달된 정보 중 name='tags_str'인 input의 값을 가져오라는 의미
+            if tags_str:
+                tags_str = tags_str.strip()    # 문자열 공백 제거
+
+                tags_str = tags_str.replace(',', ';')
+                tags_list = tags_str.split(';')
+
+                for t in tags_list:
+                    t = t.strip()
+                    tag, is_tag_created = Tag.objects.get_or_create(name=t)     # 같은 name을 갖는 tag가 있다면 가져오고 없으면 새로 만듬, Tag모델 인스턴스와 인스턴스가 새로생성되었는지 나타내는 bool을 리턴
+                    if is_tag_created:
+                        tag.slug = slugify(t, allow_unicode=True)   # 새로 생성하는 경우 slug도 만들어줘야함
+                        tag.save()
+                    self.object.tags.add(tag)   # 새로 만든 post의 tags 필드에 tag 추가
+
+            return response    # 처리한 form을 기본 form_valid() 함수에 인자로 보내서 처리
         else:
             return redirect('/blog/')   # 로그인한 상태가 아니라면 이전 주소로 되돌려 보냄
 

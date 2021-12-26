@@ -195,17 +195,26 @@ class TestView(TestCase):
         main_area = soup.find('div', id='main-area')
         self.assertIn('Create New Post', main_area.text)
 
+        tag_str_input = main_area.find('input', id='id_tags_str')   # tag input이 존재하는지 확인
+        self.assertTrue(tag_str_input)
+
         self.client.post(
             '/blog/create_post/',  # 해당 경로로
             {
                 'title': 'Post Form 만들기',
                 'content': 'Post Form 페이지를 만듭시다.',  # 딕셔너리 정보를 Post 방식으로 전송
+                'tags_str': 'new tag; 한글태그, python',
             }
         )
         self.assertEqual(Post.objects.count(), 4)
         last_post = Post.objects.last()
         self.assertEqual(last_post.title, "Post Form 만들기")  # 마지막 게시물 즉, 전송한 게시물 정보가 잘 저장됐는지 확인
         self.assertEqual(last_post.author.username, 'obama')
+
+        self.assertEqual(last_post.tags.count(), 3)
+        self.assertTrue(Tag.objects.get(name='new tag'))
+        self.assertTrue(Tag.objects.get(name='한글태그'))
+        self.assertTrue(Tag.objects.count(), 5)
 
     def test_update_post(self):
         update_post_url = f'/blog/update_post/{self.post_003.pk}/'
@@ -237,7 +246,7 @@ class TestView(TestCase):
             update_post_url,
             {
                 'title': '세번째 포스트를 수정했습니다.',
-                'contnet': '안녕 세계? 우리는 하나!',
+                'content': '안녕 세계? 우리는 하나!',
                 'category': self.category_music.pk,  # pk 값을 명시해야함
             },
             follow=True
