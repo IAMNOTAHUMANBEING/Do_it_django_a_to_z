@@ -107,7 +107,35 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
         else:  
             raise PermissionDenied  # 만족하지 않으면 403 오류 메시지 나타냄
 
+    def get_context_data(self, **kwargs):
+        context = super(PostUpdate, self).get_context_data()    # 템플릿으로 추가인자 넘기는 기능
+        if self.object.tags.exists():
+            tags_str_list = list()
+            for t in self.object.tags.all():
+                tags_str_list.append(t.name)
+            context['tags_str_default'] = ';'.join(tags_str_list)   # ;으로 결합하여 return 하면 템플릿에서 해당 위치를 채움
 
+        return context
+
+    def form_valid(self, form):     # PostCreate에 사용한 것 재사용
+        response = super(PostUpdate, self).form_valid(form)
+        self.object.tags.clear()    # 가져온 포스트의 태그를 모두 제거하고 수정된 내용으로 채우기
+
+        tags_str = self.request.POST.get('tags_str')
+        if tags_str:
+            tags_str = tags_str.strip()
+            tags_str = tags_str.replace(',', ';')
+            tags_list = tags_str.split(';')
+
+            for t in tags_list:
+                t = t.strip()
+                tag, is_tag_created = Tag.objects.get_or_create(name=t)
+                if is_tag_created:
+                    tag.slug = slugify(t, allow_unicode=True)
+                    tag.save()
+                self.object.tags.add(tag)
+
+        return response
 # FBV 방식
 # def index(request):
 #     posts = Post.objects.all().order_by('-pk')
