@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'blog',
     'single_pages',
     'django_extensions',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -128,4 +129,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'   # 앞에 . 붙여서 고생함
 MEDIA_ROOT = os.path.join(BASE_DIR, '_media')
-
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
