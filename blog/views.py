@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Post, Category, Tag
+from django.core.exceptions import PermissionDenied
 
 class PostList(ListView):
     model = Post
@@ -75,6 +76,19 @@ class PostCreate(UserPassesTestMixin, LoginRequiredMixin, CreateView):   # Mixin
             return super(PostCreate, self).form_valid(form)     # 처리한 form을 기본 form_valid() 함수에 인자로 보내서 처리
         else:
             return redirect('/blog/')   # 로그인한 상태가 아니라면 이전 주소로 되돌려 보냄
+
+class PostUpdate(LoginRequiredMixin, UpdateView):
+    model = Post
+    fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload', 'category', 'tags']
+
+    template_name = 'blog/post_update_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and request.user == self.get_object().author:  # 방문자(request.user)는 로그인한 상태이고 Post의 author와 동일해야함
+            return super(PostUpdate, self).dispatch(request, *args, **kwargs)   # 만족하면 기존 dispatch 기능 작동
+        else:  
+            raise PermissionDenied  # 만족하지 않으면 403 오류 메시지 나타냄
+
 
 # FBV 방식
 # def index(request):
