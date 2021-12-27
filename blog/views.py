@@ -35,7 +35,7 @@ def category_page(request, slug):   # FBV방식으로 함수생성
         post_list = Post.objects.filter(category=None)
     else:
         category = Category.objects.get(slug=slug)  # URL에서 추출한 slug와 같은 slug를 갖는 카테고리를 불러오는 쿼리셋
-        post_list = Post.objects.filter(category=category)   # 포스트 중에서 Category.objects.get(slug=slug)로 필터링한 카테고리만 가져옴을 의미
+        post_list = Post.objects.filter(category=category)   # 포스트 중에서 Category.objects.get(slug=slug)로 필터링한 카테고리의 포스트만 가져옴을 의미
 
     return render(
         request,

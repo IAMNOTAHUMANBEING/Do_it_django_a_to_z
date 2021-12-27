@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'blog',
     'single_pages',
     'django_extensions',
+
     'crispy_forms',
+    'markdownx',
 ]
 
 MIDDLEWARE = [
