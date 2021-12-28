@@ -29,8 +29,8 @@ class Tag(models.Model):
 class Post(models.Model):
     title = models.CharField(max_length=30)  # 글씨 제한이 있는 문자 필드
     hook_text = models.CharField(max_length=100, blank=True)  # 미리보기 내용
-    content = MarkdownxField()
-              # models.TextField()  길이제한이 없는 텍스트 필드
+    content = models.TextField()  # 길이제한이 없는 텍스트 필드
+    # content = MarkdownxField()
 
     head_image = models.ImageField(upload_to='blog/images/%Y/%m/%d/', blank=True)
     file_upload = models.FileField(upload_to='blog/files/%Y/%m/%d/', blank=True)
