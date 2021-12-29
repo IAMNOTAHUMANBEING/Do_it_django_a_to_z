@@ -57,4 +57,18 @@ class Post(models.Model):
     def get_file_ext(self):  # 파일 이름에서 확장자만 리턴하는 함수
         return self.get_file_name().split('.')[-1]
 
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)    # 여러 댓글이 한 포스트의 댓글이 되므로 post필드에 ForeignKey 사용
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)    # 처음 생성될 때 시간 자동 저장
+    modified_at = models.DateTimeField(auto_now=True)   # 저장될 때 시간 자동 저장
+
+    def __str__(self):
+        return f'{self.author}::{self.content}'
+
+    def get_absolute_url(self):
+        return f'{self.post.get_absolute_url()}#comment-{self.pk}'  # '#'은 HTML 요소의 id를 의미, 해당 포스트 페이지를 열고 comment-{self.pk}에 해당하는 위치로 이동함을 의미
+    
+                             
 
