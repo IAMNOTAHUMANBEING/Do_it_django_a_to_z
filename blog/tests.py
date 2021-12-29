@@ -278,4 +278,51 @@ class TestView(TestCase):
         self.assertIn('some tag', main_area.text)
         self.assertNotIn('python', main_area.text)
 
+    def test_comment_form(self):
+        self.assertEqual(Comment.objects.count(), 1)    # setUp() 함수에 이미 댓글이 하나 있는 상태에서 시작합니다
+        self.assertEqual(self.post_001.comment_set.count(), 1)  # 위 댓글은 post_001에 달려있는지 확인
+
+        # 로그인 하지 않은 상태
+        response = self.client.get(self.post_001.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        comment_area = soup.find('div', id='comment-area')
+        self.assertIn('Log in and leave a comment', comment_area.text)  # 로그인 하라는 메세지 출력
+        self.assertFalse(comment_area.find('form', id='comment-form'))  # form이 안보여야함
+
+        # 로그인 한 상태
+        self.client.login(username='obama', password='somepassword')
+        response = self.client.get(self.post_001.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        comment_area = soup.find('div', id='comment-area')
+        self.assertNotIn('Log in and leave a comment', comment_area.text)
+
+        comment_form = comment_area.find('form', id='comment-form')
+        self.assertTrue(comment_form.find('textarea', id='id_content'))
+        response = self.client.post(    # POST방식으로 댓글 내용을 서버로 전달, 요청결과를 response에 저장
+            self.post_001.get_absolute_url() + 'new_comment/',
+            {
+                'content': "오바마의 댓글입니다.",
+            },
+            follow=True     # POST로 보내는 경우 서버에서 처리한 후 리다이렉트 되는데 이때 따라가도록 설정하는 역할
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        
+        self.assertEqual(Comment.objects.count(), 2)    # 댓글이 추가 됐으므로 2개
+        self.assertEqual(self.post_001.comment_set.count(), 2)
+
+        new_comment = Comment.objects.last()    # 마지막으로 생성된 comment 가져오기
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertIn(new_comment.post.title, soup.title.text)  # POST 방식으로 서버에 요청하면 comment가 달린 상세 페이지가 response에 리다이렉트 됨. 마지막 생성된 comment와 일치하는지 비교
+
+        comment_area = soup.find('div', id='comment-area')
+        new_comment_div = comment_area.find('div', id=f'comment-{new_comment.pk}')
+        self.assertIn('obama', new_comment_div.text)
+        self.assertIn("오바마의 댓글입니다.", new_comment_div.text)
+        
 

@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Post, Category, Tag
+from .forms import CommentForm
 from django.utils.text import slugify
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
 
 class PostList(ListView):
     model = Post
@@ -26,7 +28,7 @@ class PostDetail(DetailView):
         context = super(PostDetail, self).get_context_data()     # 기존 get_context_data가 제공하던 기능 저장
         context['categories'] = Category.objects.all()
         context['no_category_post_count'] = Post.objects.filter(category=None).count()      # 카테고리가 지정되지 않은 포스트 개수를 세서 쿼리셋으로 만들어 저장
-
+        context['comment_form'] = CommentForm
         return context
 
 def category_page(request, slug):   # FBV방식으로 함수생성
@@ -136,6 +138,26 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
                 self.object.tags.add(tag)
 
         return response
+
+    def new_comment(request, pk):
+        if request.user.is_authenticated:   # 로그인 하지 않은 경우 댓글폼이 보이지 않게 했지만 비정상적 방법으로 접근하려는 시도가 있을 경우 대비
+            post = get_object_or_404(Post, pk=pk)   # 댓글을 달 포스트를 쿼리를 날려서 가져오기 없으면 404 오류 발생시키기
+
+            if request.method == 'POST':    # Submit를 클릭하면 POST방식으로 전달 됨. 직접 브라우저로 입력하여 접근하는 경우 GET방식으로 접근하게 되므로 해당 포스트 페이지로 리다이렉트 시킴
+                comment_form = CommentForm(request.POST)    # 정상적으로 폼을 작성하고 POST 방식으로 서버에 요청이 들어왔다면 POST방식으로 들어온 정보를 comment form 형태로 가져옴
+                if comment_form.is_valid():     # form이 유효하게 작성됐다면 해당 내용으로 새로운 레코드를 만들어 DB에 저장
+                    comment = comment_form.save(commit=False)   # 바로 저장하지 않고 연기
+                    comment.post = post
+                    comment.author = request.user
+                    comment.save()  # post, author field를 채움
+                    return redirect(comment.get_absolute_url())    # 해당 포스트의 상세페이지에서 댓글이 작성된 위치로 이동
+                else:
+                    return redirect(post.get_absolute_url())
+
+            else:
+                raise PermissionDenied
+
+
 # FBV 방식
 # def index(request):
 #     posts = Post.objects.all().order_by('-pk')
