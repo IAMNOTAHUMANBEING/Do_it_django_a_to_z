@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 class PostList(ListView):
     model = Post
     ordering = '-pk'  # 최신순 정렬
+    paginate_by = 5
 
     def get_context_data(self,
                          **kwargs):  # ListView에서 내장하고 있는 메서드 model = post 하면 post_list = Post.objects.all()을 자동으로 명령 하는 등의 기능을 함, 오버라이딩 해서 가져오는 정보 추가
@@ -188,6 +189,7 @@ def delete_comment(request, pk):
         return redirect(post.get_absolute_url())
     else:
         raise PermissionDenied
+
 
 
 # FBV 방식
