@@ -180,6 +180,14 @@ class CommentUpdate(LoginRequiredMixin, UpdateView):
         else:
             raise PermissionDenied
 
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk) # 함수에서 인자로 받은 pk값과 같은 값을 가진 댓글을 쿼리셋으로 가져옴
+    post = comment.post
+    if request.user.is_authenticated and request.user == comment.author:
+        comment.delete()
+        return redirect(post.get_absolute_url())
+    else:
+        raise PermissionDenied
 
 
 # FBV 방식
