@@ -69,6 +69,12 @@ class Comment(models.Model):
 
     def get_absolute_url(self):
         return f'{self.post.get_absolute_url()}#comment-{self.pk}'  # '#'은 HTML 요소의 id를 의미, 해당 포스트 페이지를 열고 comment-{self.pk}에 해당하는 위치로 이동함을 의미
+
+    def get_avatar_url(self):
+        if self.author.socialaccount_set.exists():
+            return self.author.socialaccount_set.first().get_avatar_url()
+        else:
+            return f'https://doitdjango.com/avatar/id/505/cac0f057ee2aa45a/svg/{self.author.email}'
     
                              
 
