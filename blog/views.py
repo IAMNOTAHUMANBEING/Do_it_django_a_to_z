@@ -6,6 +6,7 @@ from .forms import CommentForm
 from django.utils.text import slugify
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 
 class PostList(ListView):
@@ -190,6 +191,22 @@ def delete_comment(request, pk):
     else:
         raise PermissionDenied
 
+class PostSearch(PostList):
+    paginate_by = None
+
+    def get_queryset(self):     # model로 지정된 요소 전체를 가져오는 역할을 하므로 검색된 결과만 가져오도록 오버라이딩
+        q = self.kwargs['q']
+        post_list = Post.objects.filter(
+            Q(title__contains=q) | Q(tags__name__contains=q)    # get이나 filter로 쿼리를 만들 때 여러 조건을 사용할 경우 Q 이용
+        ).distinct()                                            # __는 .과 같은 의미, 쿼리조건에선 __로 써야함
+        return post_list                                        # distinct는 중복으로 가져온 요소 제거
+
+    def get_context_data(self, **kwargs):
+        context = super(PostSearch, self).get_context_data()
+        q = self.kwargs['q']
+        context['search_info'] = f'Search: {q} ({self.get_queryset().count()})'     # 템플릿으로 인자 추가
+
+        return context
 
 
 # FBV 방식

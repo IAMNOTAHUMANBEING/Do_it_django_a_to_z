@@ -24,9 +24,10 @@
                 <div class="card-header">Search</div>
                 <div class="card-body">
                     <div class="input-group">
-                        <input class="form-control" type="text" placeholder="Enter search term..."
-                               aria-label="Enter search term..." aria-describedby="button-search"/>
-                        <button class="btn btn-primary" id="button-search" type="button">Go!</button>
+                        <input class="form-control" type="text" placeholder="Search for..." id="search-input"/>
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button" onclick="searchPost()">Go!</button>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -35,28 +36,43 @@
                 <div class="card-header">Categories</div>
                 <div class="card-body">
                     <div class="row">
-                     <ul>
-                         {% for category in categories %}
-                         <li>
-                             <a href="{{ category.get_absolute_url }}">
-                                 {{ category }}({{ category.post_set.count }})
-                             </a>
-                         </li>
-                         {% endfor %}
-                         <li>
-                             <a href="/blog/category/no_category/">미분류 ({{ no_category_post_count }})</a>
-                         </li>
-                     </ul>
+                        <ul>
+                            {% for category in categories %}
+                            <li>
+                                <a href="{{ category.get_absolute_url }}">
+                                    {{ category }}({{ category.post_set.count }})
+                                </a>
+                            </li>
+                            {% endfor %}
+                            <li>
+                                <a href="/blog/category/no_category/">미분류 ({{ no_category_post_count }})</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-</div>
-</div>
-</div>
-</div>
+
+<script>
+    function searchPost(){
+        let searchValue = document.getElementById('search-input').value.trim();
+        if (searchValue.length > 1){
+            location.href = "/blog/search/" + searchValue + '/';
+        }
+        else{
+            alert('검색어('+ searchValue +')가 너무 짧습니다.');
+        }
+    };
+
+    document.getElementById('search-input').addEventListener('keyup', function(event)
+    {
+        if(event.key == 'Enter'){
+            searchPost();
+        }
+    });
+</script>
 
 {% include 'blog/footer.html' %}
 
@@ -70,9 +86,3 @@
         integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s"
         crossorigin="anonymous"></script>
 </body>
-</html></title>
-</head>
-<body>
-
-</body>
-</html>
