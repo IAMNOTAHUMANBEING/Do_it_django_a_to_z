@@ -57,6 +57,12 @@ class Post(models.Model):
     def get_file_ext(self):  # 파일 이름에서 확장자만 리턴하는 함수
         return self.get_file_name().split('.')[-1]
 
+    def get_avatar_url(self):
+        if self.author.socialaccount_set.exists():
+            return self.author.socialaccount_set.first().get_avatar_url()
+        else:
+            return f'https://doitdjango.com/avatar/id/505/cac0f057ee2aa45a/svg/{self.author.email}'
+
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)    # 여러 댓글이 한 포스트의 댓글이 되므로 post필드에 ForeignKey 사용
     author = models.ForeignKey(User, on_delete=models.CASCADE)
