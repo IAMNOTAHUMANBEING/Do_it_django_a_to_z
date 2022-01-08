@@ -8,7 +8,7 @@ def about_me(request):
     )
 
 def landing(request):
-    recent_posts = Post.objects.order_by('pk')[:3]
+    recent_posts = Post.objects.order_by('-pk')[:3]
     return render(
         request,
         'single_pages/landing.html',
