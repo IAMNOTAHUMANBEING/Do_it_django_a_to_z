@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.9-slim-bullseye
+FROM python:3.9-slim-buster
 # 책 내용 수정
 
 # set work directory
