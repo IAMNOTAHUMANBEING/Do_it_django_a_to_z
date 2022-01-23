@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  ngix:
+  nginx:
     build: ./nginx
     volumes:
       - static_volume:/usr/src/app/_static
